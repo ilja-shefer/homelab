@@ -1,0 +1,27 @@
+# General description of the cluster layout.
+# Per-node identifiers (MAC, IP, hostname, tokens) live in ../secrets/, never here.
+
+cluster:
+  name: shefer-homelab
+  kubernetes: kubeadm
+  os: "Ubuntu Server 24.04 LTS"
+
+roles:
+  master:
+    count: 1
+    ram_gb: 16
+    disk: "256 GB NVMe"
+    notes: "Single control plane — no HA, acceptable for homelab."
+
+  worker:
+    count: 2
+    ram_gb: 8
+    disk: "256 GB SATA SSD"
+    notes: "8 GB is tight for media transcoding; prefer direct-play workloads."
+
+network:
+  # Subnets only — actual IPs are in ../secrets/nodes.yaml.
+  lan_cidr: "10.0.0.0/24"
+  pod_cidr: "10.42.0.0/16"
+  service_cidr: "10.43.0.0/16"
+  metallb_pool: "reserved range inside lan_cidr"
