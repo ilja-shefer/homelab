@@ -18,3 +18,15 @@ See `docs/nodes.example.yaml` for the inventory schema. Real inventory with MAC 
 - `cluster/` — platform components (ingress, cert-manager, storage, load balancer)
 - `apps/` — workloads (media stack, DNS, etc.)
 - `secrets/` — gitignored; real MACs, IPs, kubeconfigs, tokens
+
+Each layer needs the one below it running first.
+
+```mermaid
+graph BT
+    bootstrap[bootstrap/<br/>k8s control plane + workers]
+    cluster[cluster/<br/>ingress, cert-manager, storage]
+    apps[apps/<br/>jellyfin, paperless, ...]
+
+    bootstrap --> cluster
+    cluster --> apps
+```
