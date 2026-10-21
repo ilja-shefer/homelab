@@ -4,10 +4,10 @@
 cluster:
   name: shefer-homelab
   kubernetes: kubeadm
-  os: "Ubuntu Server 24.04 LTS"
+  os: "Debian 13 (trixie)"
 
 roles:
-  master:
+  control_plane:
     count: 1
     ram_gb: 16
     disk: "256 GB NVMe"

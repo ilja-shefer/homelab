@@ -4,10 +4,10 @@ Self-hosted Kubernetes homelab.
 
 ## Hardware
 
-| Role   | Count | RAM   | Disk            |
-| ------ | ----- | ----- | --------------- |
-| master | 1     | 16 GB | 256 GB NVMe     |
-| worker | 2     | 8 GB  | 256 GB SATA SSD |
+| Role          | Count | RAM   | Disk            |
+| ------------- | ----- | ----- | --------------- |
+| control plane | 1     | 16 GB | 256 GB NVMe     |
+| worker        | 2     | 8 GB  | 256 GB SATA SSD |
 
 See `docs/nodes.example.yaml` for the inventory schema. Real inventory with MAC addresses and IPs lives in `secrets/` (gitignored).
 
