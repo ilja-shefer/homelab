@@ -124,6 +124,6 @@ In `/etc/containerd/config.toml`, change `SystemdCgroup = false` to
 sudo systemctl restart containerd
 ```
 
-Verify: `grep -nE 'disabled_plugins|SystemdCgroup' /etc/containerd/config.toml`
-shows `disabled_plugins = []` and `SystemdCgroup = true`, and
-`systemctl is-active containerd` shows `active`.
+Verify: `grep SystemdCgroup /etc/containerd/config.toml` → `SystemdCgroup = true`
+
+Verify: `systemctl is-active containerd` → `active`
