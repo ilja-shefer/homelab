@@ -17,13 +17,7 @@ predictable.
 
 ### On Debian
 
-1. Open `/etc/fstab` in an editor:
-
-   ```shell
-   sudo nano /etc/fstab
-   ```
-
-   Find the line with `swap` in the 3rd column, e.g.:
+1. In `/etc/fstab`, find the line with `swap` in the 3rd column, e.g.:
 
    ```
    UUID=<your-swap-uuid> none  swap  sw  0  0
@@ -34,8 +28,6 @@ predictable.
    ```
    # UUID=<your-swap-uuid> none  swap  sw  0  0
    ```
-
-   Save and exit (`Ctrl+O`, `Enter`, `Ctrl+X` in nano).
 
 2. List all swap units. On UEFI/GPT systems, systemd auto-generates swap units
    from the partition table independent of fstab, so masking is also required:
@@ -115,3 +107,23 @@ sudo apt install -y containerd.io
 ```
 
 Verify: `containerd --version` shows 2.x.
+
+### Prepare `/etc/containerd/config.toml`
+
+The `containerd.io` package installs a config made for Docker, which disables the
+CRI plugin that kubelet talks to. Replace it with containerd's default config:
+
+```shell
+containerd config default | sudo tee /etc/containerd/config.toml > /dev/null
+```
+
+In `/etc/containerd/config.toml`, change `SystemdCgroup = false` to
+`SystemdCgroup = true`, then restart containerd:
+
+```shell
+sudo systemctl restart containerd
+```
+
+Verify: `grep -nE 'disabled_plugins|SystemdCgroup' /etc/containerd/config.toml`
+shows `disabled_plugins = []` and `SystemdCgroup = true`, and
+`systemctl is-active containerd` shows `active`.
