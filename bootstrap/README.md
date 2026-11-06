@@ -127,3 +127,49 @@ sudo systemctl restart containerd
 Verify: `grep SystemdCgroup /etc/containerd/config.toml` → `SystemdCgroup = true`
 
 Verify: `systemctl is-active containerd` → `active`
+
+## Install kubeadm, kubelet and kubectl
+
+kubeadm sets up the cluster, kubelet is the agent on every node that starts pods
+through containerd, and kubectl is the command line for talking to the cluster.
+All three come from the
+[Kubernetes apt repo](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl).
+
+Install the packages apt needs to use the Kubernetes repo:
+
+```shell
+sudo apt-get install -y apt-transport-https ca-certificates curl gpg
+```
+
+Each minor version has its own repo, so the `v1.37` in the repo URL keeps the
+cluster on 1.37.x. Moving to 1.38 later means changing that URL and going through
+kubeadm's upgrade steps. The signing key is the same for every version:
+
+```shell
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.37/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.37/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+```
+
+Install all three and hold them, so `apt upgrade` doesn't bump them. Cluster
+upgrades go through kubeadm:
+
+```shell
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+```
+
+Start kubelet now and on every boot:
+
+```shell
+sudo systemctl enable --now kubelet
+```
+
+kubelet now restarts every few seconds, and `systemctl status kubelet` shows
+`activating (auto-restart)`. That's expected: it has no config until
+`kubeadm init` or `kubeadm join` writes one.
+
+Verify: `kubeadm version -o short` → `v1.37.x`
+
+Verify: `apt-mark showhold` → `kubeadm`, `kubectl`, `kubelet`
