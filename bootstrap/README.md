@@ -130,10 +130,12 @@ Verify: `systemctl is-active containerd` → `active`
 
 ## Install kubeadm, kubelet and kubectl
 
-kubeadm sets up the cluster, kubelet is the agent on every node that starts pods
-through containerd, and kubectl is the command line for talking to the cluster.
-All three come from the
-[Kubernetes apt repo](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl).
+Three tools come from the
+[Kubernetes apt repo](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#installing-kubeadm-kubelet-and-kubectl):
+
+- `kubeadm` sets up the cluster
+- `kubelet` is the agent on every node that starts pods through `containerd`
+- `kubectl` is the command line for talking to the cluster
 
 Install the packages apt needs to use the Kubernetes repo:
 
