@@ -173,3 +173,31 @@ kubelet now restarts every few seconds, and `systemctl status kubelet` shows
 Verify: `kubeadm version -o short` → `v1.37.x`
 
 Verify: `apt-mark showhold` → `kubeadm`, `kubectl`, `kubelet`
+
+## Give each node a fixed IP
+
+The control-plane IP ends up in the certificates, the kubeconfig and the join
+command that `kubeadm` creates, so the cluster breaks if the router later hands
+out a different address. In the router, reserve a DHCP address for every node and
+note it in `secrets/nodes.yaml`. Reboot the node if the reserved address differs
+from the current one.
+
+To find the node's address, `kubeadm` looks at the interface that holds the
+default route, which only works when there is exactly one. Check the routes:
+
+```shell
+ip route show
+```
+
+> **Example output**
+>
+> ```
+> default via 192.168.1.1 dev eno1 proto dhcp src 192.168.1.10 metric 1002 mtu 1500
+> 192.168.1.0/24 dev eno1 proto dhcp scope link src 192.168.1.10 metric 1002 mtu 1500
+> ```
+>
+> - `default via 192.168.1.1 dev eno1` sends all traffic outside the home network to the router 
+> through the network port `eno1`, and there must be only one such line
+> - `src 192.168.1.10` is this node's own IP and must match the address reserved in the router
+> - `192.168.1.0/24` is the home network, which the nodes reach directly without the router
+>
